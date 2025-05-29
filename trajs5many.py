@@ -59,13 +59,13 @@ if 'listall' not in locals():
     #                         axis = 0)
 
     # THIRD RUN - ALL AT ONCE
-    #listall = np.concatenate((np.load('listall_250m_24times_168h.npy'), # -2.144  -59.100  
-    #                          np.load('listall_500m_24times_168h.npy'), # -2.144  -59.000  
-    #                          np.load('listall_750m_24times_168h.npy'), # -2.144  -59.000  
-    #                          np.load('listall_1000m_24times_168h.npy'), # -2.144  -59.000 
-    #                          np.load('listall_2000m_24times_168h.npy'), # -2.244  -59.000 
-    #                          np.load('listall_3000m_24times_168h.npy'), # -2.044  -59.000 
-    #                          np.load('listall_4000m_24times_168h.npy')), # -2.144  -58.900
+    #listall = np.concatenate((np.load('listall_250m_24times_168h.npy'), # -2.144  -59.000    250.0 -Dz  
+    #                          np.load('listall_500m_24times_168h.npy'), # -2.144  -59.000    500.0 Normal
+    #                          np.load('listall_750m_24times_168h.npy'), # -2.144  -59.000    750.0 +Dz
+    #                          np.load('listall_1000m_24times_168h.npy'), # -2.144  -59.000  1000.0 ++Dz
+    #                          np.load('listall_2000m_24times_168h.npy'), # -2.244  -59.000  2000.0 +++Dz
+    #                          np.load('listall_3000m_24times_168h.npy'), # -2.044  -59.000  3000.0 ++++Dz
+    #                          np.load('listall_4000m_24times_168h.npy')), # -2.144  -58.900 4000.0 +++++Dz
     #                         axis = 0)
     #
     #trajlen = 168/0.5 + 1  # number of points
