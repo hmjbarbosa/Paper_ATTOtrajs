@@ -15,7 +15,6 @@ import io
 plt.ion()
 plt.interactive(True)
 
-
 # ========================================================================================
 # LOAD FILE WITH ALL TRAJECTORIES
 # ========================================================================================
@@ -25,47 +24,47 @@ if 'listall' not in locals():
     print('read data')
 
     # FIRST RUN
-    #listall = np.load('listall_002_12z_96h.npy')
+    #listall = np.load('run1/listall_002_12z_96h.npy')
 
     # SECOND RUN
-    #listall = np.load('listall_001_4times_168h.npy') # -2.144  -59.100    500.0 -DLon
-    #listall = np.load('listall_002_4times_168h.npy') # -2.144  -59.000    500.0  Normal
-    #listall = np.load('listall_003_4times_168h.npy') # -2.144  -59.000    250.0  -Dz
-    #listall = np.load('listall_004_4times_168h.npy') # -2.144  -59.000    750.0  +Dz
-    #listall = np.load('listall_005_4times_168h.npy') # -2.244  -59.000    500.0 -DLat
-    #listall = np.load('listall_006_4times_168h.npy') # -2.044  -59.000    500.0 +DLat
-    #listall = np.load('listall_007_4times_168h.npy') # -2.144  -58.900    500.0 +DLon
+    #listall = np.load('run2/listall_001_4times_168h.npy') # -2.144  -59.100    500.0 -DLon
+    #listall = np.load('run2/listall_002_4times_168h.npy') # -2.144  -59.000    500.0  Normal
+    #listall = np.load('run2/listall_003_4times_168h.npy') # -2.144  -59.000    250.0  -Dz
+    #listall = np.load('run2/listall_004_4times_168h.npy') # -2.144  -59.000    750.0  +Dz
+    #listall = np.load('run2/listall_005_4times_168h.npy') # -2.244  -59.000    500.0 -DLat
+    #listall = np.load('run2/listall_006_4times_168h.npy') # -2.044  -59.000    500.0 +DLat
+    #listall = np.load('run2/listall_007_4times_168h.npy') # -2.144  -58.900    500.0 +DLon
 
     # THIRD RUN
-    #listall = np.load('listall_250m_24times_168h.npy') # -2.144  -59.100  
-    #listall = np.load('listall_500m_24times_168h.npy') # -2.144  -59.000  
-    #listall = np.load('listall_750m_24times_168h.npy') # -2.144  -59.000  
-    #listall = np.load('listall_1000m_24times_168h.npy') # -2.144  -59.000 
-    listall = np.load('listall_2000m_24times_168h.npy') # -2.244  -59.000 
-    #listall = np.load('listall_3000m_24times_168h.npy') # -2.044  -59.000 
-    #listall = np.load('listall_4000m_24times_168h.npy') # -2.144  -58.900 
+    #listall = np.load('run3/listall_250m_24times_168h.npy') # -2.144  -59.100  
+    #listall = np.load('run3/listall_500m_24times_168h.npy') # -2.144  -59.000  
+    #listall = np.load('run3/listall_750m_24times_168h.npy') # -2.144  -59.000  
+    #listall = np.load('run3/listall_1000m_24times_168h.npy') # -2.144  -59.000 
+    listall = np.load('run3/listall_2000m_24times_168h.npy') # -2.244  -59.000 
+    #listall = np.load('run3/listall_3000m_24times_168h.npy') # -2.044  -59.000 
+    #listall = np.load('run3/listall_4000m_24times_168h.npy') # -2.144  -58.900 
     
     trajlen = 168/0.5 + 1  # number of points
     trajalt = listall[0,1] # initial altitude
 
     # SECOND RUN - ALL AT ONCE
-    #listall = np.concatenate((np.load('listall_001_4times_168h.npy'), # -2.144  -59.100    500.0 -DLon
-    #                          np.load('listall_002_4times_168h.npy'), # -2.144  -59.000    500.0  Normal
-    #                          np.load('listall_003_4times_168h.npy'), # -2.144  -59.000    250.0  -Dz
-    #                          np.load('listall_004_4times_168h.npy'), # -2.144  -59.000    750.0  +Dz
-    #                          np.load('listall_005_4times_168h.npy'), # -2.244  -59.000    500.0 -DLat
-    #                          np.load('listall_006_4times_168h.npy'), # -2.044  -59.000    500.0 +DLat
-    #                          np.load('listall_007_4times_168h.npy')), # -2.144  -58.900    500.0 +DLon
+    #listall = np.concatenate((np.load('run2/listall_001_4times_168h.npy'), # -2.144  -59.100    500.0 -DLon
+    #                          np.load('run2/listall_002_4times_168h.npy'), # -2.144  -59.000    500.0  Normal
+    #                          np.load('run2/listall_003_4times_168h.npy'), # -2.144  -59.000    250.0  -Dz
+    #                          np.load('run2/listall_004_4times_168h.npy'), # -2.144  -59.000    750.0  +Dz
+    #                          np.load('run2/listall_005_4times_168h.npy'), # -2.244  -59.000    500.0 -DLat
+    #                          np.load('run2/listall_006_4times_168h.npy'), # -2.044  -59.000    500.0 +DLat
+    #                          np.load('run2/listall_007_4times_168h.npy')), # -2.144  -58.900    500.0 +DLon
     #                         axis = 0)
 
     # THIRD RUN - ALL AT ONCE
-    #listall = np.concatenate((np.load('listall_250m_24times_168h.npy'), # -2.144  -59.000    250.0 -Dz  
-    #                          np.load('listall_500m_24times_168h.npy'), # -2.144  -59.000    500.0 Normal
-    #                          np.load('listall_750m_24times_168h.npy'), # -2.144  -59.000    750.0 +Dz
-    #                          np.load('listall_1000m_24times_168h.npy'), # -2.144  -59.000  1000.0 ++Dz
-    #                          np.load('listall_2000m_24times_168h.npy'), # -2.244  -59.000  2000.0 +++Dz
-    #                          np.load('listall_3000m_24times_168h.npy'), # -2.044  -59.000  3000.0 ++++Dz
-    #                          np.load('listall_4000m_24times_168h.npy')), # -2.144  -58.900 4000.0 +++++Dz
+    #listall = np.concatenate((np.load('run3/listall_250m_24times_168h.npy'), # -2.144  -59.000    250.0 -Dz  
+    #                          np.load('run3/listall_500m_24times_168h.npy'), # -2.144  -59.000    500.0 Normal
+    #                          np.load('run3/listall_750m_24times_168h.npy'), # -2.144  -59.000    750.0 +Dz
+    #                          np.load('run3/listall_1000m_24times_168h.npy'), # -2.144  -59.000  1000.0 ++Dz
+    #                          np.load('run3/listall_2000m_24times_168h.npy'), # -2.244  -59.000  2000.0 +++Dz
+    #                          np.load('run3/listall_3000m_24times_168h.npy'), # -2.044  -59.000  3000.0 ++++Dz
+    #                          np.load('run3/listall_4000m_24times_168h.npy')), # -2.144  -58.900 4000.0 +++++Dz
     #                         axis = 0)
     #
     #trajlen = 168/0.5 + 1  # number of points
@@ -91,20 +90,24 @@ date = (listall[:,13]*100 + listall[:,14])*100 + listall[:,15]
 #daycleanTXT = np.genfromtxt('clean_day.txt', delimiter='-', skip_header=1)
 
 # open file, replacing '-' with space 
-s = io.BytesIO(open('BCe_high.txt', 'rb').read().replace(b'-',b' '))
+s = io.BytesIO(open('data/BCe_high.txt', 'rb').read().replace(b'-',b' '))
 # read with space as delimiter
 daypolutTXT = np.genfromtxt(s, delimiter=' ', skip_header=1)
 # keep only the columns for y/m/d
+highbc = daypolutTXT[:,1]
 daypolutTXT = daypolutTXT[:,2:5]
 # merge the date as one number
 daypolut = (daypolutTXT[:,0]*100 + daypolutTXT[:,1])*100 + daypolutTXT[:,2]
 print('List of polluted days = ' + str(len(daypolut)))
+print('    BCe = ',np.mean(highbc),' +- ', np.std(highbc), '  max/min=', np.max(highbc), np.min(highbc))
 
-s = io.BytesIO(open('BCe_low.txt', 'rb').read().replace(b'-',b' '))
+s = io.BytesIO(open('data/BCe_low.txt', 'rb').read().replace(b'-',b' '))
 daycleanTXT = np.genfromtxt(s, delimiter=' ', skip_header=1)
+lowbc = daycleanTXT[:,1]
 daycleanTXT = daycleanTXT[:,2:5]
 dayclean = (daycleanTXT[:,0]*100 + daycleanTXT[:,1])*100 + daycleanTXT[:,2]
 print('List of clean days = ' + str(len(dayclean)))
+print('    BCe = ',np.mean(lowbc),' +- ', np.std(lowbc), '  max/min=', np.max(lowbc), np.min(lowbc))
 
 # ========================================================================================
 # CREATE FLAG OF CLEAN / POLUT FOR EACH TRAJECTORY POINT

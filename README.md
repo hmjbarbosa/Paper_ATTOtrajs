@@ -17,13 +17,13 @@ Mar, Dec. Sent by LTM on Nov-27-2023:
 Second list of dates, only lowest 10% BC days (clean) and top 10% BC
 days (polluted). Sent LTM on Mar-22-2024:
 
-* data/clean10_quantile.txt has 90 clean days
+* data/clean10_quantile.txt has 90 clean days (date column is wrong!)
 * data/polluted90_quantile.txt has 90 polluted days
 
-Third and final list of dates. Sent LTM on Apr-18-2024:
+Third list of dates. Sent LTM on Apr-18-2024:
 
-* data/BCe_low.txt has 90 clean days (different)
-* data/BCe_high.txt has 90 polluted days (identical to above)
+* data/BCe_low.txt has 90 clean days (date column fixed)
+* data/BCe_high.txt has 90 polluted days (no change)
 
 # Hysplit
 
