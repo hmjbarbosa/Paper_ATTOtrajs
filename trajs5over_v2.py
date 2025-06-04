@@ -12,9 +12,7 @@ import numpy as np
 import sys
 import io
 
-import importlib
 import ltmbcfiles 
-importlib.reload(ltmbcfiles)
 
 plt.ion()
 plt.interactive(True)
@@ -26,10 +24,10 @@ plt.interactive(True)
 # skip reading if variable already in memory
 if 'listall' not in locals(): 
     print('=== READ DATA')
-
+    
     # FIRST RUN
     #listall = np.load('run1/listall_002_12z_96h.npy')
-
+    
     # SECOND RUN
     #listall = np.load('run2/listall_001_4times_168h.npy') # -2.144  -59.100    500.0 -DLon
     #listall = np.load('run2/listall_002_4times_168h.npy') # -2.144  -59.000    500.0  Normal
@@ -38,16 +36,7 @@ if 'listall' not in locals():
     #listall = np.load('run2/listall_005_4times_168h.npy') # -2.244  -59.000    500.0 -DLat
     #listall = np.load('run2/listall_006_4times_168h.npy') # -2.044  -59.000    500.0 +DLat
     #listall = np.load('run2/listall_007_4times_168h.npy') # -2.144  -58.900    500.0 +DLon
-
-    # THIRD RUN
-    #listall = np.load('run3/listall_250m_24times_168h.npy') # -2.144  -59.100  
-    #listall = np.load('run3/listall_500m_24times_168h.npy') # -2.144  -59.000  
-    #listall = np.load('run3/listall_750m_24times_168h.npy') # -2.144  -59.000  
-    #listall = np.load('run3/listall_1000m_24times_168h.npy') # -2.144  -59.000 
-    #listall = np.load('run3/listall_2000m_24times_168h.npy') # -2.244  -59.000 
-    #listall = np.load('run3/listall_3000m_24times_168h.npy') # -2.044  -59.000 
-    #listall = np.load('run3/listall_4000m_24times_168h.npy') # -2.144  -58.900 
-    
+    #
     #trajlen = 168/0.5 + 1  # number of points
     #trajalt = listall[0,1] # initial altitude
 
@@ -60,32 +49,39 @@ if 'listall' not in locals():
                               np.load('run2/listall_006_4times_168h.npy'), # -2.044  -59.000    500.0 +DLat
                               np.load('run2/listall_007_4times_168h.npy')), # -2.144  -58.900    500.0 +DLon
                              axis = 0)
-
-    # THIRD RUN - ALL AT ONCE
-    #listall = np.concatenate((np.load('run3/listall_250m_24times_168h.npy'), # -2.144  -59.000    250.0 -Dz  
-    #                          np.load('run3/listall_500m_24times_168h.npy'), # -2.144  -59.000    500.0 Normal
-    #                          np.load('run3/listall_750m_24times_168h.npy'), # -2.144  -59.000    750.0 +Dz
-    #                          np.load('run3/listall_1000m_24times_168h.npy'), # -2.144  -59.000  1000.0 ++Dz
-    #                          np.load('run3/listall_2000m_24times_168h.npy'), # -2.244  -59.000  2000.0 +++Dz
-    #                          np.load('run3/listall_3000m_24times_168h.npy'), # -2.044  -59.000  3000.0 ++++Dz
-    #                          np.load('run3/listall_4000m_24times_168h.npy')), # -2.144  -58.900 4000.0 +++++Dz
-    #                         axis = 0)
     #
     trajlen = 168/0.5 + 1  # number of points
-    trajalt = 'all'       # initial altitude
-
+    trajalt = 'all'
+    
     
 # grab just the columns we need here 
 t0   = listall[:,0]   # start hour of traj (0, 6, 12, 18Z)
 alt  = listall[:,1]   # start altitude (250, 500, 750 m)
-tid  = listall[:,2]   # trajectory number 
+tid  = listall[:,2]   # trajectory number
 dt   = listall[:,3]   # backward time (0h, -0.5h, -1h, ...)
 tf   = listall[:,4]   # time of day
 x    = listall[:,5]   
 y    = listall[:,6]   # position
 z    = listall[:,7]
 date = (listall[:,13]*100 + listall[:,14])*100 + listall[:,15]
+#flag = listall[:,16]  # pollution flag
 
+# HMJB: 29-May-2025
+#
+# This script was trying to read column 17, but the files only have 16 columns.
+#
+# I found that the script trajs.py was creating .NPY files with this additional column,
+# but it was using the file clean10_quantile.txt, which had a bug (wrong dates).
+# Moreover, I could not find the .NPY files with this additional column.
+#
+# The figure created by this script overlays the clean and polluted trajectories
+# on the same figure. The figure is on the slide deck, and LTM used it in the paper
+# I'm not sure how I produced this figure without the NPY files... or the wrong dates
+# for the clean days. 
+#
+# Below, I've added code to read the correct FLAGS files, and generate the figure for
+# the paper, but the results is slightly different from what is on the slide deck. 
+#
 
 # ========================================================================================
 # LIST WITH CLEAN X POLLUTTED DAYS
@@ -95,7 +91,9 @@ date = (listall[:,13]*100 + listall[:,14])*100 + listall[:,15]
 # #daycleanTXT = np.genfromtxt('clean_day.txt', delimiter='-', skip_header=1)
 # 
 # # open file, replacing '-' with space 
-# s = io.BytesIO(open('data/BCe_high.txt', 'rb').read().replace(b'-',b' '))
+# #s = io.BytesIO(open('data/polluted90_quantile.txt', 'rb').read().replace(b'-',b' '))
+# #s = io.BytesIO(open('data/BCe_high.txt', 'rb').read().replace(b'-',b' '))
+# s = io.BytesIO(open('data/polluted_day_janfev.txt', 'rb').read().replace(b'-',b' '))
 # # read with space as delimiter
 # daypolutTXT = np.genfromtxt(s, delimiter=' ', skip_header=1)
 # # keep only the columns for y/m/d
@@ -106,7 +104,9 @@ date = (listall[:,13]*100 + listall[:,14])*100 + listall[:,15]
 # print('List of polluted days = ' + str(len(daypolut)))
 # print('    BCe = ',np.mean(highbc),' +- ', np.std(highbc), '  max/min=', np.max(highbc), np.min(highbc))
 # 
-# s = io.BytesIO(open('data/BCe_low.txt', 'rb').read().replace(b'-',b' '))
+# #s = io.BytesIO(open('data/clean10_quantile.txt', 'rb').read().replace(b'-',b' '))
+# #s = io.BytesIO(open('data/BCe_low.txt', 'rb').read().replace(b'-',b' '))
+# s = io.BytesIO(open('data/clean_day_janfev.txt', 'rb').read().replace(b'-',b' '))
 # daycleanTXT = np.genfromtxt(s, delimiter=' ', skip_header=1)
 # lowbc = daycleanTXT[:,1]
 # daycleanTXT = daycleanTXT[:,2:5]
@@ -132,6 +132,7 @@ date = (listall[:,13]*100 + listall[:,14])*100 + listall[:,15]
 daypolut, highbc = ltmbcfiles.read_bc_file('data/polluted_day_janfev.txt')
 dayclean, lowbc = ltmbcfiles.read_bc_file('data/clean_day_janfev.txt')
 
+
 # ========================================================================================
 # CREATE FLAG OF CLEAN / POLUT FOR EACH TRAJECTORY POINT
 # ========================================================================================
@@ -153,65 +154,51 @@ print('=== COMPUTE DENSITY')
 # old domain for 4 days
 #loni=-70; lonf=-20; lati=-15; latf=25; dl=1
 # larger domain for 7 days
-loni=-70; lonf=10; lati=-15; latf=35; dl=1.5
+loni=-70; lonf=0; lati=-15; latf=35; dl=1.5
 
 nxy, xedges, yedges, ntrajs, nmax, nsum = ltmbcfiles.density_map_points(
     [loni, lonf, lati, latf], [dl, dl], [x, y], flag, dt)
 
-# xedges = np.arange(loni, lonf + dl, dl)
-# yedges = np.arange(lati, latf + dl, dl)
-#xcenters = xedges[:-1] + 0.5 * (xedges[1:] - xedges[:-1])
-#ycenters = yedges[:-1] + 0.5 * (yedges[1:] - yedges[:-1])
-# 
-# # matrix to store results
-# nxy = np.zeros([len(ycenters), len(xcenters), 3])
-# ntrajs = np.zeros(3)
-# nmax = np.zeros(3)
-# nsum = np.zeros(3)
-# 
-# # clean=0 polluted=1 other=2
-# print('=== COMPUTE DENSITY')
-# for ff in [0, 1, 2]: 
-#     mask = (flag==ff)
-# 
-#     # count the number of trajectory points inside each gridbox
-#     nxy[:,:,ff] = np.histogram2d(y[mask], x[mask], bins=[yedges, xedges])[0]
-#     
-#     # Each traj can contribute more than once for each gridpoint,
-#     # depending on the output time-step of the trajectory and the size
-#     # of the grid. Which means there are different ways of normalizing
-#     # the density map.
-#     
-#     # number of trajectories
-#     trajini = mask & (dt == 0)
-#     ntrajs[ff] = np.nansum(trajini)
-# 
-#     # maximum number of counts in any gridbox
-#     nmax[ff] = np.nanmax(nxy[:,:,ff])
-# 
-#     # total number of counts
-#     nsum[ff] = np.nansum(nxy[:,:,ff])
-#     
-#     #nxy[:,:,ff] = 100*nxy[:,:,ff]/nmax[ff] 
-#     #nxy[:,:,ff][nxy[:,:,ff]<0.01]=np.nan
-# 
-
+#xedges = np.arange(loni, lonf + dl, dl)
+#yedges = np.arange(lati, latf + dl, dl)
+xcenters = xedges[:-1] + 0.5 * (xedges[1:] - xedges[:-1])
+ycenters = yedges[:-1] + 0.5 * (yedges[1:] - yedges[:-1])
+#
+## matrix to store results
+#nxy = np.zeros([len(ycenters), len(xcenters), 3])
+#ntrajs = np.zeros(3)
+#nmax = np.zeros(3)
+#nsum = np.zeros(3)
+#
+## clean=0 polluted=1 other=2
+#for ff in [0, 1, 2]: 
+#    mask = (flag==ff)
+#
+#    # count the number of trajectory points inside each gridbox
+#    nxy[:,:,ff] = np.histogram2d(y[mask], x[mask], bins=[yedges, xedges])[0]
+#    
+#    # Each traj can contribute more than once for each gridpoint,
+#    # depending on the output time-step of the trajectory and the size
+#    # of the grid. Which means there are different ways of normalizing
+#    # the density map.
+#    
+#    # number of trajectories
+#    trajini = mask & (dt == 0)
+#    ntrajs[ff] = np.nansum(trajini)
+#
+#    # maximum number of counts in any gridbox
+#    nmax[ff] = np.nanmax(nxy[:,:,ff])
+#
+#    # total number of counts
+#    nsum[ff] = np.nansum(nxy[:,:,ff])
+#    
+#    #nxy[:,:,ff] = 100*nxy[:,:,ff]/nmax[ff] 
+#    #nxy[:,:,ff][nxy[:,:,ff]<0.01]=np.nan
+#
 
 # ========================================================================================
 # trying to count each trajectory just once
 # ========================================================================================
-
-#
-# tid restarts with each file
-# add an offset so that the ID's are unique
-#if (trajalt=='all'):
-#    print('reset trajectory ids')
-#    for i in np.arange(1, len(tid)):
-#        if tid[i] < tid[i-1]:
-#            tid[i:] += tid[i-1] - tid[i] + 1
-#
-#nxy, xedges, yedges, ntrajs, nmax, nsum = ltmbcfiles.density_map_trajs(
-#    [loni, lonf, lati, latf], [dl, dl], [x, y], flag, tid)
 
 #nxySingle = np.zeros([len(ycenters), len(xcenters), 3])
 #
@@ -223,9 +210,6 @@ nxy, xedges, yedges, ntrajs, nmax, nsum = ltmbcfiles.density_map_points(
 #    # we have to build a histogram for each trajectory separately
 #    # first, get the list of trajectory IDs for the current pollution flag
 #    idlist = np.unique(tid[mask])
-#
-# hmjb: 2025/jun/4 TID is not unique! it restarts from 0 for a new strating position
-#                  Hence, when loading multiple trajectory files at one, this will not work. 
 #
 #    # now loop over each trajectory
 #    for ii in idlist:
@@ -239,60 +223,111 @@ nxy, xedges, yedges, ntrajs, nmax, nsum = ltmbcfiles.density_map_points(
 #        # finally, accumulate this counts
 #        nxySingle[:,:,ff] =nxySingle[:,:,ff] + temp
     
-
 # ========================================================================================
 # Figures
 # ========================================================================================
 
-#cmap = matplotlib.cm.viridis
-cmap = matplotlib.cm.Blues
 print('=== PLOTS')
-norm = ['byTrajs', 'byPoints', 'byMax', 'single']
-for nn in [2]: 
 
-    tag = ['clean', 'polluted', 'other']
-    for ff in [0, 1]:
-    
-        fig = plt.figure(num=ff+10*nn, clear=True)
+nn=2; norm = ['byTrajs', 'byPoints', 'byMax', 'single']
 
-        # geographic coordinates for maping
-        ax1 = plt.axes(projection=ccrs.PlateCarree())
-        #ax1.set_extent([loni, lonf, lati, latf])
+def fmt(x):
+    s = f"{x:.1f}"
+    if s.endswith("0"):
+        s = f"{x:.0f}"
+    return rf"{s} \%" if plt.rcParams["text.usetex"] else f"{s} %"
 
+# one figure
+# two panels, both with geografic coordinates
 
-        #Cnorm = colors.BoundaryNorm([0.1, 0.2, 0.5, 1,2,5,10,20,50,100], cmap.N)
-        Cnorm = colors.BoundaryNorm([1e-3,2,5,10,20,50,100], cmap.N, clip=False)
-        #Cnorm = colors.LogNorm()
-        #Cnorm = colors.Normalize()
-        if nn==0:
-            pc = ax1.pcolormesh(xedges, yedges, 100*nxy[:,:,ff]/ntrajs[ff], cmap=cmap, norm=Cnorm)
-        if nn==1:
-            pc = ax1.pcolormesh(xedges, yedges, 100*nxy[:,:,ff]/nsum[ff], cmap=cmap, norm=Cnorm)
-        if nn==2:
-            pc = ax1.pcolormesh(xedges, yedges, 100*nxy[:,:,ff]/nmax[ff], cmap=cmap, norm=Cnorm)
-        if nn==3: 
-            pc = ax1.pcolormesh(xedges, yedges, 100*nxySingle[:,:,ff]/ntrajs[ff], cmap=cmap, norm=Cnorm)
+fig, axs = plt.subplots(num=123,nrows=1, ncols=2, clear=True,
+                        subplot_kw={'projection': ccrs.PlateCarree()},
+                        figsize=(12,5))
 
-        fig.colorbar(pc, orientation='horizontal',pad=0.1, aspect=30,
-                     label='Density of trajectories [%]', fraction=0.06, shrink=0.9)
+# geographic coordinates for maping
+#ax1 = plt.axes(projection=ccrs.PlateCarree())
+#ax1.set_extent([loni, lonf, lati, latf])
 
-        ax1.set_title(tag[ff] + '(N={:.0f})'.format(ntrajs[ff]) + ' ' + norm[nn] + ' h=' + str(trajalt))
+cmap = matplotlib.cm.Blues
 
-        gl = ax1.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
-                           linewidth=1, color='gray', alpha=0.5, linestyle=':')
-        
+#Cnorm = colors.BoundaryNorm([0.1, 0.2, 0.5, 1,2,5,10,20,50,100], cmap.N)
+#Cnorm = colors.BoundaryNorm([1,2,5,10,20,50,100], cmap.N)
+#cl = [0.1, 0.2, 0.5, 1,2,5,10,20,50,100]
+cl = [2,5,10,20,50,100]
+#cl = [1e-3,2,5,10,15,20,25,30,35,40]
+#cl = np.arange(1e-3,60,10)
+Cnorm = colors.BoundaryNorm(cl, cmap.N, clip=False)
+#Cnorm = colors.LogNorm()
+#Cnorm = colors.Normalize()
 
-        # map
-        ax1.add_feature(cfeature.COASTLINE, linewidth=1.5, linestyle='-', edgecolor='black', alpha=1)
-        ax1.add_feature(cfeature.BORDERS, linewidth=1, linestyle='-', edgecolor='black', alpha=.75)
-        ax1.add_feature(cfeature.STATES, linewidth=1, linestyle='-', edgecolor='gray', alpha=.5)
-        plt.scatter(-58.999861, -2.144111, s=30, c='blue', marker='o') #T0a
-        #sys.exit()
+#nxy[nxy<1] = np.nan
 
-        # export PNG
-        fname = 'histplot2d_traj_' + tag[ff] + '_' + norm[nn] + '_' + str(trajalt) + '_168h_counts.png'
-        plt.savefig(fname)
+# --------------------- CLEAN PANEL
+pcCl = axs[0].contourf(xcenters, ycenters, 100*nxy[:,:,0]/nmax[0], cmap=cm.Blues, norm=Cnorm, levels=cl, extend='neither')
+axs[0].contour(xcenters, ycenters, 100*nxy[:,:,0]/nmax[0], colors='black', linewidths=1, levels=cl)
+#axs[0].contour(xcenters, ycenters, 100*nxy[:,:,0]/nmax[0], cmap=cm.Blues.reversed(), norm=Cnorm, levels=cl)
+#axs[0].clabel(pcCl, pcCl.levels[:-1], inline=True, fmt=fmt, fontsize=12, colors='k')
+
+# make fake rectangle. we will use the colors for the legend
+# otherwise the legend will use the first color in the 'shading', which is too light
+#clean = matplotlib.patches.Rectangle((0, 0), 1, 1, facecolor=cm.Blues(0.8))
+#axs[0].legend([clean], ['Clean'], loc='upper left')#, bbox_to_anchor=(0.025, -0.1), fancybox=True)
+
+# place the color bar
+#fig.colorbar(pcCl, ax=axs[0],orientation='horizontal',pad=0.1, aspect=30,
+#             label='Density of trajectories [%]', fraction=0.06, shrink=0.9)
+
+axs[0].set_title('Clean')
+
+# map
+gl = axs[0].gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
+                      linewidth=1, color='gray', alpha=0.5, linestyle=':')
+gl.top_labels = False
+gl.right_labels = False
+axs[0].add_feature(cfeature.COASTLINE, linewidth=1.5, linestyle='-', edgecolor='black', alpha=1)
+axs[0].add_feature(cfeature.BORDERS, linewidth=1, linestyle='-', edgecolor='black', alpha=.75)
+axs[0].add_feature(cfeature.STATES, linewidth=1, linestyle='-', edgecolor='gray', alpha=.5)
+axs[0].scatter(-58.999861, -2.144111, s=30, c='black', marker='*') #T0a
+
+# --------------------- POLLUTED PANEL
+pcPo = axs[1].contourf(xcenters, ycenters, 100*nxy[:,:,1]/nmax[1], cmap=cm.Blues, norm=Cnorm, levels=cl, extend='neither')
+axs[1].contour(xcenters, ycenters, 100*nxy[:,:,1]/nmax[1], colors='black', linewidths=1, levels=cl)
+#axs[1].clabel(pcPo, pcPo.levels[:-1], inline=True, fmt=fmt, fontsize=12, colors='k')
+
+# make fake rectangle. we will use the colors for the legend
+# otherwise the legend will use the first color in the 'shading', which is too light
+#polut = matplotlib.patches.Rectangle((0, 0), 1, 1, facecolor=cm.Reds(0.8))
+#axs[1].legend([polut], ['Polluted'], loc='upper left')#, bbox_to_anchor=(0.025, -0.1), fancybox=True)
+
+# place the color bar
+#fig.colorbar(pcPo, ax=axs[1],orientation='horizontal',pad=0.1, aspect=30,
+#             label='Density of trajectories [%]', fraction=0.06, shrink=0.9)
+
+#ax1.set_title(norm[nn] + ' h=' + str(trajalt))
+axs[1].set_title('Polluted')
+
+# map
+gl = axs[1].gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
+                   linewidth=1, color='gray', alpha=0.5, linestyle=':')
+gl.top_labels = False
+gl.right_labels = False
+axs[1].add_feature(cfeature.COASTLINE, linewidth=1.5, linestyle='-', edgecolor='black', alpha=1)
+axs[1].add_feature(cfeature.BORDERS, linewidth=1, linestyle='-', edgecolor='black', alpha=.75)
+axs[1].add_feature(cfeature.STATES, linewidth=1, linestyle='-', edgecolor='gray', alpha=.5)
+axs[1].scatter(-58.999861, -2.144111, s=30, c='black', marker='*') #T0a
+
+# ---------------------
+# common colorbar for both pannels
+#plt.tight_layout()
+fig.colorbar(pcPo, ax=axs,orientation='horizontal',pad=0.1, aspect=30,
+             label='Density of trajectories [%]', fraction=0.06, shrink=0.5)
+
 #
+
+# export PNG
+fname = 'histplot2d_traj_both_' + norm[nn] + '_' + str(trajalt) + '_168h_counts.png'
+plt.savefig(fname, bbox_inches='tight')
+#s
 
 #
 
