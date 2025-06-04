@@ -12,6 +12,8 @@ import numpy as np
 import sys
 import io
 
+import ltmbcfiles 
+
 plt.ion()
 plt.interactive(True)
 
@@ -85,32 +87,51 @@ date = (listall[:,13]*100 + listall[:,14])*100 + listall[:,15]
 # LIST WITH CLEAN X POLLUTTED DAYS
 # ========================================================================================
 
-#daypolutTXT = np.genfromtxt('polluted_day.txt', delimiter='-', skip_header=1)
-#daycleanTXT = np.genfromtxt('clean_day.txt', delimiter='-', skip_header=1)
+# #daypolutTXT = np.genfromtxt('polluted_day.txt', delimiter='-', skip_header=1)
+# #daycleanTXT = np.genfromtxt('clean_day.txt', delimiter='-', skip_header=1)
+# 
+# # open file, replacing '-' with space 
+# #s = io.BytesIO(open('data/polluted90_quantile.txt', 'rb').read().replace(b'-',b' '))
+# #s = io.BytesIO(open('data/BCe_high.txt', 'rb').read().replace(b'-',b' '))
+# s = io.BytesIO(open('data/polluted_day_janfev.txt', 'rb').read().replace(b'-',b' '))
+# # read with space as delimiter
+# daypolutTXT = np.genfromtxt(s, delimiter=' ', skip_header=1)
+# # keep only the columns for y/m/d
+# highbc = daypolutTXT[:,1]
+# daypolutTXT = daypolutTXT[:,2:5]
+# # merge the date as one number
+# daypolut = (daypolutTXT[:,0]*100 + daypolutTXT[:,1])*100 + daypolutTXT[:,2]
+# print('List of polluted days = ' + str(len(daypolut)))
+# print('    BCe = ',np.mean(highbc),' +- ', np.std(highbc), '  max/min=', np.max(highbc), np.min(highbc))
+# 
+# #s = io.BytesIO(open('data/clean10_quantile.txt', 'rb').read().replace(b'-',b' '))
+# #s = io.BytesIO(open('data/BCe_low.txt', 'rb').read().replace(b'-',b' '))
+# s = io.BytesIO(open('data/clean_day_janfev.txt', 'rb').read().replace(b'-',b' '))
+# daycleanTXT = np.genfromtxt(s, delimiter=' ', skip_header=1)
+# lowbc = daycleanTXT[:,1]
+# daycleanTXT = daycleanTXT[:,2:5]
+# dayclean = (daycleanTXT[:,0]*100 + daycleanTXT[:,1])*100 + daycleanTXT[:,2]
+# print('List of clean days = ' + str(len(dayclean)))
+# print('    BCe = ',np.mean(lowbc),' +- ', np.std(lowbc), '  max/min=', np.max(lowbc), np.min(lowbc))
 
-# open file, replacing '-' with space 
-#s = io.BytesIO(open('data/polluted90_quantile.txt', 'rb').read().replace(b'-',b' '))
-#s = io.BytesIO(open('data/BCe_high.txt', 'rb').read().replace(b'-',b' '))
-s = io.BytesIO(open('data/polluted_day_janfev.txt', 'rb').read().replace(b'-',b' '))
-# read with space as delimiter
-daypolutTXT = np.genfromtxt(s, delimiter=' ', skip_header=1)
-# keep only the columns for y/m/d
-highbc = daypolutTXT[:,1]
-daypolutTXT = daypolutTXT[:,2:5]
-# merge the date as one number
-daypolut = (daypolutTXT[:,0]*100 + daypolutTXT[:,1])*100 + daypolutTXT[:,2]
-print('List of polluted days = ' + str(len(daypolut)))
-print('    BCe = ',np.mean(highbc),' +- ', np.std(highbc), '  max/min=', np.max(highbc), np.min(highbc))
+# 1st classification
+#daypolut, highbc = ltmbcfiles.read_bc_file('data/polluted_day.txt')
+#dayclean, lowbc = ltmbcfiles.read_bc_file('data/clean_day.txt')
 
-#s = io.BytesIO(open('data/clean10_quantile.txt', 'rb').read().replace(b'-',b' '))
-#s = io.BytesIO(open('data/BCe_low.txt', 'rb').read().replace(b'-',b' '))
-s = io.BytesIO(open('data/clean_day_janfev.txt', 'rb').read().replace(b'-',b' '))
-daycleanTXT = np.genfromtxt(s, delimiter=' ', skip_header=1)
-lowbc = daycleanTXT[:,1]
-daycleanTXT = daycleanTXT[:,2:5]
-dayclean = (daycleanTXT[:,0]*100 + daycleanTXT[:,1])*100 + daycleanTXT[:,2]
-print('List of clean days = ' + str(len(dayclean)))
-print('    BCe = ',np.mean(lowbc),' +- ', np.std(lowbc), '  max/min=', np.max(lowbc), np.min(lowbc))
+# 2nd classification
+# there was an error in 'clean10' where the dates were equal to the polluted90 !!!
+#daypolut, highbc = ltmbcfiles.read_bc_file('data/polluted90_quantile.txt')
+#dayclean, lowbc = ltmbcfiles.read_bc_file('data/clean10_quantile.txt')
+
+# 3rd classification
+#daypolut, highbc = ltmbcfiles.read_bc_file('data/BCe_high.txt')
+#dayclean, lowbc = ltmbcfiles.read_bc_file('data/BCe_low.txt')
+
+
+# 4th classification
+daypolut, highbc = ltmbcfiles.read_bc_file('data/polluted_day_janfev.txt')
+dayclean, lowbc = ltmbcfiles.read_bc_file('data/clean_day_janfev.txt')
+
 
 # ========================================================================================
 # CREATE FLAG OF CLEAN / POLUT FOR EACH TRAJECTORY POINT

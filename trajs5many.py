@@ -12,6 +12,8 @@ import numpy as np
 import sys
 import io
 
+import ltmbcfiles 
+
 plt.ion()
 plt.interactive(True)
 
@@ -40,22 +42,22 @@ if 'listall' not in locals():
     #listall = np.load('run3/listall_500m_24times_168h.npy') # -2.144  -59.000  
     #listall = np.load('run3/listall_750m_24times_168h.npy') # -2.144  -59.000  
     #listall = np.load('run3/listall_1000m_24times_168h.npy') # -2.144  -59.000 
-    listall = np.load('run3/listall_2000m_24times_168h.npy') # -2.244  -59.000 
+    #listall = np.load('run3/listall_2000m_24times_168h.npy') # -2.244  -59.000 
     #listall = np.load('run3/listall_3000m_24times_168h.npy') # -2.044  -59.000 
     #listall = np.load('run3/listall_4000m_24times_168h.npy') # -2.144  -58.900 
     
-    trajlen = 168/0.5 + 1  # number of points
-    trajalt = listall[0,1] # initial altitude
+    #trajlen = 168/0.5 + 1  # number of points
+    #trajalt = listall[0,1] # initial altitude
 
     # SECOND RUN - ALL AT ONCE
-    #listall = np.concatenate((np.load('run2/listall_001_4times_168h.npy'), # -2.144  -59.100    500.0 -DLon
-    #                          np.load('run2/listall_002_4times_168h.npy'), # -2.144  -59.000    500.0  Normal
-    #                          np.load('run2/listall_003_4times_168h.npy'), # -2.144  -59.000    250.0  -Dz
-    #                          np.load('run2/listall_004_4times_168h.npy'), # -2.144  -59.000    750.0  +Dz
-    #                          np.load('run2/listall_005_4times_168h.npy'), # -2.244  -59.000    500.0 -DLat
-    #                          np.load('run2/listall_006_4times_168h.npy'), # -2.044  -59.000    500.0 +DLat
-    #                          np.load('run2/listall_007_4times_168h.npy')), # -2.144  -58.900    500.0 +DLon
-    #                         axis = 0)
+    listall = np.concatenate((np.load('run2/listall_001_4times_168h.npy'), # -2.144  -59.100    500.0 -DLon
+                              np.load('run2/listall_002_4times_168h.npy'), # -2.144  -59.000    500.0  Normal
+                              np.load('run2/listall_003_4times_168h.npy'), # -2.144  -59.000    250.0  -Dz
+                              np.load('run2/listall_004_4times_168h.npy'), # -2.144  -59.000    750.0  +Dz
+                              np.load('run2/listall_005_4times_168h.npy'), # -2.244  -59.000    500.0 -DLat
+                              np.load('run2/listall_006_4times_168h.npy'), # -2.044  -59.000    500.0 +DLat
+                              np.load('run2/listall_007_4times_168h.npy')), # -2.144  -58.900    500.0 +DLon
+                             axis = 0)
 
     # THIRD RUN - ALL AT ONCE
     #listall = np.concatenate((np.load('run3/listall_250m_24times_168h.npy'), # -2.144  -59.000    250.0 -Dz  
@@ -67,8 +69,8 @@ if 'listall' not in locals():
     #                          np.load('run3/listall_4000m_24times_168h.npy')), # -2.144  -58.900 4000.0 +++++Dz
     #                         axis = 0)
     #
-    #trajlen = 168/0.5 + 1  # number of points
-    #trajalt = 'all'       # initial altitude
+    trajlen = 168/0.5 + 1  # number of points
+    trajalt = 'all'       # initial altitude
 
     
 # grab just the columns we need here 
@@ -86,28 +88,46 @@ date = (listall[:,13]*100 + listall[:,14])*100 + listall[:,15]
 # LIST WITH CLEAN X POLLUTTED DAYS
 # ========================================================================================
 
-#daypolutTXT = np.genfromtxt('polluted_day.txt', delimiter='-', skip_header=1)
-#daycleanTXT = np.genfromtxt('clean_day.txt', delimiter='-', skip_header=1)
+# #daypolutTXT = np.genfromtxt('polluted_day.txt', delimiter='-', skip_header=1)
+# #daycleanTXT = np.genfromtxt('clean_day.txt', delimiter='-', skip_header=1)
+# 
+# # open file, replacing '-' with space 
+# s = io.BytesIO(open('data/BCe_high.txt', 'rb').read().replace(b'-',b' '))
+# # read with space as delimiter
+# daypolutTXT = np.genfromtxt(s, delimiter=' ', skip_header=1)
+# # keep only the columns for y/m/d
+# highbc = daypolutTXT[:,1]
+# daypolutTXT = daypolutTXT[:,2:5]
+# # merge the date as one number
+# daypolut = (daypolutTXT[:,0]*100 + daypolutTXT[:,1])*100 + daypolutTXT[:,2]
+# print('List of polluted days = ' + str(len(daypolut)))
+# print('    BCe = ',np.mean(highbc),' +- ', np.std(highbc), '  max/min=', np.max(highbc), np.min(highbc))
+# 
+# s = io.BytesIO(open('data/BCe_low.txt', 'rb').read().replace(b'-',b' '))
+# daycleanTXT = np.genfromtxt(s, delimiter=' ', skip_header=1)
+# lowbc = daycleanTXT[:,1]
+# daycleanTXT = daycleanTXT[:,2:5]
+# dayclean = (daycleanTXT[:,0]*100 + daycleanTXT[:,1])*100 + daycleanTXT[:,2]
+# print('List of clean days = ' + str(len(dayclean)))
+# print('    BCe = ',np.mean(lowbc),' +- ', np.std(lowbc), '  max/min=', np.max(lowbc), np.min(lowbc))
 
-# open file, replacing '-' with space 
-s = io.BytesIO(open('data/BCe_high.txt', 'rb').read().replace(b'-',b' '))
-# read with space as delimiter
-daypolutTXT = np.genfromtxt(s, delimiter=' ', skip_header=1)
-# keep only the columns for y/m/d
-highbc = daypolutTXT[:,1]
-daypolutTXT = daypolutTXT[:,2:5]
-# merge the date as one number
-daypolut = (daypolutTXT[:,0]*100 + daypolutTXT[:,1])*100 + daypolutTXT[:,2]
-print('List of polluted days = ' + str(len(daypolut)))
-print('    BCe = ',np.mean(highbc),' +- ', np.std(highbc), '  max/min=', np.max(highbc), np.min(highbc))
+# 1st classification
+#daypolut, highbc = ltmbcfiles.read_bc_file('data/polluted_day.txt')
+#dayclean, lowbc = ltmbcfiles.read_bc_file('data/clean_day.txt')
 
-s = io.BytesIO(open('data/BCe_low.txt', 'rb').read().replace(b'-',b' '))
-daycleanTXT = np.genfromtxt(s, delimiter=' ', skip_header=1)
-lowbc = daycleanTXT[:,1]
-daycleanTXT = daycleanTXT[:,2:5]
-dayclean = (daycleanTXT[:,0]*100 + daycleanTXT[:,1])*100 + daycleanTXT[:,2]
-print('List of clean days = ' + str(len(dayclean)))
-print('    BCe = ',np.mean(lowbc),' +- ', np.std(lowbc), '  max/min=', np.max(lowbc), np.min(lowbc))
+# 2nd classification
+# there was an error in 'clean10' where the dates were equal to the polluted90 !!!
+#daypolut, highbc = ltmbcfiles.read_bc_file('data/polluted90_quantile.txt')
+#dayclean, lowbc = ltmbcfiles.read_bc_file('data/clean10_quantile.txt')
+
+# 3rd classification
+#daypolut, highbc = ltmbcfiles.read_bc_file('data/BCe_high.txt')
+#dayclean, lowbc = ltmbcfiles.read_bc_file('data/BCe_low.txt')
+
+
+# 4th classification
+daypolut, highbc = ltmbcfiles.read_bc_file('data/polluted_day_janfev.txt')
+dayclean, lowbc = ltmbcfiles.read_bc_file('data/clean_day_janfev.txt')
 
 # ========================================================================================
 # CREATE FLAG OF CLEAN / POLUT FOR EACH TRAJECTORY POINT
