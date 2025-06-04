@@ -23,7 +23,7 @@ plt.interactive(True)
 
 # skip reading if variable already in memory
 if 'listall' not in locals(): 
-    print('read data')
+    print('=== READ DATA')
     
     # FIRST RUN
     #listall = np.load('run1/listall_002_12z_96h.npy')
@@ -136,14 +136,19 @@ dayclean, lowbc = ltmbcfiles.read_bc_file('data/clean_day_janfev.txt')
 # ========================================================================================
 # CREATE FLAG OF CLEAN / POLUT FOR EACH TRAJECTORY POINT
 # ========================================================================================
-print('create clean / polut flag')
+print('=== CREATE CLEAN / POLUT FLAG')
 flag = 2 * np.ones(date.shape)      # flag for other days
 flag[ np.in1d(date, daypolut, assume_unique=True) & (t0>-1) ] = 1 # pollution flag
 flag[ np.in1d(date, dayclean, assume_unique=True) & (t0>-1) ] = 0 # clean flag
+print('Clean = ', np.sum(flag==0))
+print('Polut = ', np.sum(flag==1))
+print('Other = ', np.sum(flag==2))
 
 # ========================================================================================
 # DENSITY MAP
 # ========================================================================================
+
+print('=== COMPUTE DENSITY')
 
 # define grid/histogram
 # old domain for 4 days
@@ -151,43 +156,45 @@ flag[ np.in1d(date, dayclean, assume_unique=True) & (t0>-1) ] = 0 # clean flag
 # larger domain for 7 days
 loni=-70; lonf=10; lati=-15; latf=35; dl=1
 
-xedges = np.arange(loni, lonf + dl, dl)
-yedges = np.arange(lati, latf + dl, dl)
+nxy, xedges, yedges, ntrajs, nmax, nsum = ltmbcfiles.density_map_points(
+    [loni, lonf, lati, latf], [dl, dl], [x, y], flag, dt)
+
+#xedges = np.arange(loni, lonf + dl, dl)
+#yedges = np.arange(lati, latf + dl, dl)
 xcenters = xedges[:-1] + 0.5 * (xedges[1:] - xedges[:-1])
 ycenters = yedges[:-1] + 0.5 * (yedges[1:] - yedges[:-1])
-
-# matrix to store results
-nxy = np.zeros([len(ycenters), len(xcenters), 3])
-ntrajs = np.zeros(3)
-nmax = np.zeros(3)
-nsum = np.zeros(3)
-
-# clean=0 polluted=1 other=2
-print('compute density')
-for ff in [0, 1, 2]: 
-    mask = (flag==ff)
-
-    # count the number of trajectory points inside each gridbox
-    nxy[:,:,ff] = np.histogram2d(y[mask], x[mask], bins=[yedges, xedges])[0]
-    
-    # Each traj can contribute more than once for each gridpoint,
-    # depending on the output time-step of the trajectory and the size
-    # of the grid. Which means there are different ways of normalizing
-    # the density map.
-    
-    # number of trajectories
-    trajini = mask & (dt == 0)
-    ntrajs[ff] = np.nansum(trajini)
-
-    # maximum number of counts in any gridbox
-    nmax[ff] = np.nanmax(nxy[:,:,ff])
-
-    # total number of counts
-    nsum[ff] = np.nansum(nxy[:,:,ff])
-    
-    #nxy[:,:,ff] = 100*nxy[:,:,ff]/nmax[ff] 
-    #nxy[:,:,ff][nxy[:,:,ff]<0.01]=np.nan
-
+#
+## matrix to store results
+#nxy = np.zeros([len(ycenters), len(xcenters), 3])
+#ntrajs = np.zeros(3)
+#nmax = np.zeros(3)
+#nsum = np.zeros(3)
+#
+## clean=0 polluted=1 other=2
+#for ff in [0, 1, 2]: 
+#    mask = (flag==ff)
+#
+#    # count the number of trajectory points inside each gridbox
+#    nxy[:,:,ff] = np.histogram2d(y[mask], x[mask], bins=[yedges, xedges])[0]
+#    
+#    # Each traj can contribute more than once for each gridpoint,
+#    # depending on the output time-step of the trajectory and the size
+#    # of the grid. Which means there are different ways of normalizing
+#    # the density map.
+#    
+#    # number of trajectories
+#    trajini = mask & (dt == 0)
+#    ntrajs[ff] = np.nansum(trajini)
+#
+#    # maximum number of counts in any gridbox
+#    nmax[ff] = np.nanmax(nxy[:,:,ff])
+#
+#    # total number of counts
+#    nsum[ff] = np.nansum(nxy[:,:,ff])
+#    
+#    #nxy[:,:,ff] = 100*nxy[:,:,ff]/nmax[ff] 
+#    #nxy[:,:,ff][nxy[:,:,ff]<0.01]=np.nan
+#
 
 # ========================================================================================
 # trying to count each trajectory just once
@@ -221,7 +228,7 @@ for ff in [0, 1, 2]:
 # ========================================================================================
 
 cmap = matplotlib.cm.viridis
-print('plots')
+print('=== PLOTS')
 norm = ['byTrajs', 'byPoints', 'byMax', 'single']
 
 def fmt(x):

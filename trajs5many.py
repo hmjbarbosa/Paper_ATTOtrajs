@@ -12,7 +12,9 @@ import numpy as np
 import sys
 import io
 
+import importlib
 import ltmbcfiles 
+importlib.reload(ltmbcfiles)
 
 plt.ion()
 plt.interactive(True)
@@ -23,7 +25,7 @@ plt.interactive(True)
 
 # skip reading if variable already in memory
 if 'listall' not in locals(): 
-    print('read data')
+    print('=== READ DATA')
 
     # FIRST RUN
     #listall = np.load('run1/listall_002_12z_96h.npy')
@@ -76,13 +78,14 @@ if 'listall' not in locals():
 # grab just the columns we need here 
 t0   = listall[:,0]   # start hour of traj (0, 6, 12, 18Z)
 alt  = listall[:,1]   # start altitude (250, 500, 750 m)
-tid  = listall[:,2]   # trajectory number
+tid  = listall[:,2]   # trajectory number 
 dt   = listall[:,3]   # backward time (0h, -0.5h, -1h, ...)
 tf   = listall[:,4]   # time of day
 x    = listall[:,5]   
 y    = listall[:,6]   # position
 z    = listall[:,7]
 date = (listall[:,13]*100 + listall[:,14])*100 + listall[:,15]
+
 
 # ========================================================================================
 # LIST WITH CLEAN X POLLUTTED DAYS
@@ -132,14 +135,19 @@ dayclean, lowbc = ltmbcfiles.read_bc_file('data/clean_day_janfev.txt')
 # ========================================================================================
 # CREATE FLAG OF CLEAN / POLUT FOR EACH TRAJECTORY POINT
 # ========================================================================================
-print('create clean / polut flag')
+print('=== CREATE CLEAN / POLUT FLAG')
 flag = 2 * np.ones(date.shape)      # flag for other days
 flag[ np.in1d(date, daypolut, assume_unique=True) & (t0>-1) ] = 1 # pollution flag
 flag[ np.in1d(date, dayclean, assume_unique=True) & (t0>-1) ] = 0 # clean flag
+print('Clean = ', np.sum(flag==0))
+print('Polut = ', np.sum(flag==1))
+print('Other = ', np.sum(flag==2))
 
 # ========================================================================================
 # DENSITY MAP
 # ========================================================================================
+
+print('=== COMPUTE DENSITY')
 
 # define grid/histogram
 # old domain for 4 days
@@ -147,47 +155,63 @@ flag[ np.in1d(date, dayclean, assume_unique=True) & (t0>-1) ] = 0 # clean flag
 # larger domain for 7 days
 loni=-70; lonf=10; lati=-15; latf=35; dl=1
 
-xedges = np.arange(loni, lonf + dl, dl)
-yedges = np.arange(lati, latf + dl, dl)
-xcenters = xedges[:-1] + 0.5 * (xedges[1:] - xedges[:-1])
-ycenters = yedges[:-1] + 0.5 * (yedges[1:] - yedges[:-1])
+nxy, xedges, yedges, ntrajs, nmax, nsum = ltmbcfiles.density_map_points(
+    [loni, lonf, lati, latf], [dl, dl], [x, y], flag, dt)
 
-# matrix to store results
-nxy = np.zeros([len(ycenters), len(xcenters), 3])
-ntrajs = np.zeros(3)
-nmax = np.zeros(3)
-nsum = np.zeros(3)
-
-# clean=0 polluted=1 other=2
-print('compute density')
-for ff in [0, 1, 2]: 
-    mask = (flag==ff)
-
-    # count the number of trajectory points inside each gridbox
-    nxy[:,:,ff] = np.histogram2d(y[mask], x[mask], bins=[yedges, xedges])[0]
-    
-    # Each traj can contribute more than once for each gridpoint,
-    # depending on the output time-step of the trajectory and the size
-    # of the grid. Which means there are different ways of normalizing
-    # the density map.
-    
-    # number of trajectories
-    trajini = mask & (dt == 0)
-    ntrajs[ff] = np.nansum(trajini)
-
-    # maximum number of counts in any gridbox
-    nmax[ff] = np.nanmax(nxy[:,:,ff])
-
-    # total number of counts
-    nsum[ff] = np.nansum(nxy[:,:,ff])
-    
-    #nxy[:,:,ff] = 100*nxy[:,:,ff]/nmax[ff] 
-    #nxy[:,:,ff][nxy[:,:,ff]<0.01]=np.nan
+# xedges = np.arange(loni, lonf + dl, dl)
+# yedges = np.arange(lati, latf + dl, dl)
+#xcenters = xedges[:-1] + 0.5 * (xedges[1:] - xedges[:-1])
+#ycenters = yedges[:-1] + 0.5 * (yedges[1:] - yedges[:-1])
+# 
+# # matrix to store results
+# nxy = np.zeros([len(ycenters), len(xcenters), 3])
+# ntrajs = np.zeros(3)
+# nmax = np.zeros(3)
+# nsum = np.zeros(3)
+# 
+# # clean=0 polluted=1 other=2
+# print('=== COMPUTE DENSITY')
+# for ff in [0, 1, 2]: 
+#     mask = (flag==ff)
+# 
+#     # count the number of trajectory points inside each gridbox
+#     nxy[:,:,ff] = np.histogram2d(y[mask], x[mask], bins=[yedges, xedges])[0]
+#     
+#     # Each traj can contribute more than once for each gridpoint,
+#     # depending on the output time-step of the trajectory and the size
+#     # of the grid. Which means there are different ways of normalizing
+#     # the density map.
+#     
+#     # number of trajectories
+#     trajini = mask & (dt == 0)
+#     ntrajs[ff] = np.nansum(trajini)
+# 
+#     # maximum number of counts in any gridbox
+#     nmax[ff] = np.nanmax(nxy[:,:,ff])
+# 
+#     # total number of counts
+#     nsum[ff] = np.nansum(nxy[:,:,ff])
+#     
+#     #nxy[:,:,ff] = 100*nxy[:,:,ff]/nmax[ff] 
+#     #nxy[:,:,ff][nxy[:,:,ff]<0.01]=np.nan
+# 
 
 
 # ========================================================================================
 # trying to count each trajectory just once
 # ========================================================================================
+
+#
+# tid restarts with each file
+# add an offset so that the ID's are unique
+#if (trajalt=='all'):
+#    print('reset trajectory ids')
+#    for i in np.arange(1, len(tid)):
+#        if tid[i] < tid[i-1]:
+#            tid[i:] += tid[i-1] - tid[i] + 1
+#
+#nxy, xedges, yedges, ntrajs, nmax, nsum = ltmbcfiles.density_map_trajs(
+#    [loni, lonf, lati, latf], [dl, dl], [x, y], flag, tid)
 
 #nxySingle = np.zeros([len(ycenters), len(xcenters), 3])
 #
@@ -199,6 +223,9 @@ for ff in [0, 1, 2]:
 #    # we have to build a histogram for each trajectory separately
 #    # first, get the list of trajectory IDs for the current pollution flag
 #    idlist = np.unique(tid[mask])
+#
+# hmjb: 2025/jun/4 TID is not unique! it restarts from 0 for a new strating position
+#                  Hence, when loading multiple trajectory files at one, this will not work. 
 #
 #    # now loop over each trajectory
 #    for ii in idlist:
@@ -218,9 +245,9 @@ for ff in [0, 1, 2]:
 # ========================================================================================
 
 cmap = matplotlib.cm.viridis
-print('plots')
+print('=== PLOTS')
 norm = ['byTrajs', 'byPoints', 'byMax', 'single']
-for nn in [2]: 
+for nn in [0, 1, 2]: 
 
     tag = ['clean', 'polluted', 'other']
     for ff in [0, 1, 2]:
@@ -233,7 +260,7 @@ for nn in [2]:
 
 
         #Cnorm = colors.BoundaryNorm([0.1, 0.2, 0.5, 1,2,5,10,20,50,100], cmap.N)
-        Cnorm = colors.BoundaryNorm([1,2,5,10,20,50,100], cmap.N)
+        Cnorm = colors.BoundaryNorm([1,2,5,10,20,50,100], cmap.N, clip=False)
         #Cnorm = colors.LogNorm()
         #Cnorm = colors.Normalize()
         if nn==0:
