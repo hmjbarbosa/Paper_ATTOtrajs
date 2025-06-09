@@ -272,12 +272,15 @@ axs[0].contour(xcenters, ycenters, 100*nxy[:,:,0]/nmax[0], colors='black', linew
 # otherwise the legend will use the first color in the 'shading', which is too light
 #clean = matplotlib.patches.Rectangle((0, 0), 1, 1, facecolor=cm.Blues(0.8))
 #axs[0].legend([clean], ['Clean'], loc='upper left')#, bbox_to_anchor=(0.025, -0.1), fancybox=True)
+axs[0].text(0.02, 0.98, 'a)',
+            verticalalignment='top', horizontalalignment='left',
+            transform=axs[0].transAxes, color='black', fontsize=15)
 
 # place the color bar
 #fig.colorbar(pcCl, ax=axs[0],orientation='horizontal',pad=0.1, aspect=30,
 #             label='Density of trajectories [%]', fraction=0.06, shrink=0.9)
 
-axs[0].set_title('Clean')
+axs[0].set_title('Clean (N={:.0f})'.format(ntrajs[0]))
 
 # map
 gl = axs[0].gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
@@ -298,13 +301,16 @@ axs[1].contour(xcenters, ycenters, 100*nxy[:,:,1]/nmax[1], colors='black', linew
 # otherwise the legend will use the first color in the 'shading', which is too light
 #polut = matplotlib.patches.Rectangle((0, 0), 1, 1, facecolor=cm.Reds(0.8))
 #axs[1].legend([polut], ['Polluted'], loc='upper left')#, bbox_to_anchor=(0.025, -0.1), fancybox=True)
+axs[1].text(0.02, 0.98, 'b)',
+            verticalalignment='top', horizontalalignment='left',
+            transform=axs[1].transAxes, color='black', fontsize=15)
 
 # place the color bar
 #fig.colorbar(pcPo, ax=axs[1],orientation='horizontal',pad=0.1, aspect=30,
 #             label='Density of trajectories [%]', fraction=0.06, shrink=0.9)
 
 #ax1.set_title(norm[nn] + ' h=' + str(trajalt))
-axs[1].set_title('Polluted')
+axs[1].set_title('Polluted (N={:.0f})'.format(ntrajs[1]))
 
 # map
 gl = axs[1].gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
