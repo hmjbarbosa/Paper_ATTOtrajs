@@ -166,7 +166,7 @@ def density_map_trajs(bounds, dbnd, coords, flag, tid):
             temp[temp>0] = 1
 
             # finally, accumulate this counts
-            nxy[:,:,ff] =nxySingle[:,:,ff] + temp
+            nxy[:,:,ff] =nxy[:,:,ff] + temp
     
     return(nxy, xedges, yedges, ntrajs, nmax, nsum)
     
