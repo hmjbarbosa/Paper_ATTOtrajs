@@ -62,50 +62,50 @@ print('trajs bbox: ',minlon,maxlon,minlat,maxlat)
 
 # ----------------------------------
 # read fire data
-#print('reading fires...')
-#fdataz = np.load('fire_data.npz', allow_pickle=True)
-#flats = fdataz['flats']
-#flons = fdataz['flons']
-#ftime = fdataz['ftime']
-#frp = fdataz['frp']
-#
-## exclude points outside trajgroup bounding box 
-#fmask = ( (flats >= minlat) & (flats <= maxlat) &
-#          (flons >= minlon) & (flons <= maxlon) &
-#          (ftime >= dt.datetime(2018,8,24)) & (ftime <= dt.datetime(2018,11,6)) ) 
-#
-#flats = flats[fmask]
-#flons = flons[fmask]
-#ftime = ftime[fmask]
-#frp = frp[fmask]
-#
-#print('fires in bbox: ', len(frp), ' / ', len(fmask))
+print('reading fires...')
+fdataz = np.load('fire_data.npz', allow_pickle=True)
+flats = fdataz['flats']
+flons = fdataz['flons']
+ftime = fdataz['ftime']
+frp = fdataz['frp']
+
+# exclude points outside trajgroup bounding box 
+fmask = ( (flats >= minlat) & (flats <= maxlat) &
+         (flons >= minlon) & (flons <= maxlon) &
+         (ftime >= dt.datetime(2018,8,24)) & (ftime <= dt.datetime(2018,11,6)) ) 
+
+flats = flats[fmask]
+flons = flons[fmask]
+ftime = ftime[fmask]
+frp = frp[fmask]
+
+print('fires in bbox: ', len(frp), ' / ', len(fmask))
 
 # ----------------------------------
 # Precipitation
-#print('reading precip...')
-#
-#pfile = 'TRMM_L3/3B42.2018_aug_to_nov.nc4'
-#pdata = nc4.Dataset(pfile,'r')
-#
-#plats = np.ma.filled(pdata['latitude'][:].astype(float), np.nan)
-#plons = np.ma.filled(pdata['longitude'][:].astype(float), np.nan)
-## this is hours since 2018-08-01 00:00:00
-#ptime = np.array([dt.datetime(2018,8,1) + dt.timedelta(hours=i) for i in pdata['time'][:]])
-## this is mm/hour
-#prec = np.ma.filled(pdata['pcp'][:].astype(float), np.nan)
-#
-## exclude points outside trajgroup bounding box
-#print('cropping precip from size = ', np.shape(prec))
-#prec = prec[:,:,(plons>=minlon)&(plons<=maxlon)]
-#prec = prec[:,(plats>=minlat)&(plats<=maxlat),:]
-#prec = prec[(ptime >= dt.datetime(2018,8,24)) & (ptime <= dt.datetime(2018,11,6)),:,:]
-#
-#plons = plons[(plons>=minlon)&(plons<=maxlon)]
-#plats = plats[(plats>=minlat)&(plats<=maxlat)]
-#ptime = ptime[(ptime >= dt.datetime(2018,8,24)) & (ptime <= dt.datetime(2018,11,6))]
-#
-#print('to size = ', np.shape(prec))
+print('reading precip...')
+
+pfile = 'TRMM_L3/3B42.2018_aug_to_nov.nc4'
+pdata = nc4.Dataset(pfile,'r')
+
+plats = np.ma.filled(pdata['latitude'][:].astype(float), np.nan)
+plons = np.ma.filled(pdata['longitude'][:].astype(float), np.nan)
+# this is hours since 2018-08-01 00:00:00
+ptime = np.array([dt.datetime(2018,8,1) + dt.timedelta(hours=i) for i in pdata['time'][:]])
+# this is mm/hour
+prec = np.ma.filled(pdata['pcp'][:].astype(float), np.nan)
+
+# exclude points outside trajgroup bounding box
+print('cropping precip from size = ', np.shape(prec))
+prec = prec[:,:,(plons>=minlon)&(plons<=maxlon)]
+prec = prec[:,(plats>=minlat)&(plats<=maxlat),:]
+prec = prec[(ptime >= dt.datetime(2018,8,24)) & (ptime <= dt.datetime(2018,11,6)),:,:]
+
+plons = plons[(plons>=minlon)&(plons<=maxlon)]
+plats = plats[(plats>=minlat)&(plats<=maxlat)]
+ptime = ptime[(ptime >= dt.datetime(2018,8,24)) & (ptime <= dt.datetime(2018,11,6))]
+
+print('to size = ', np.shape(prec))
 
 # for each trajectory
 for i in range(0, 0): 
