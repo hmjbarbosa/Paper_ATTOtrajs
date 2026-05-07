@@ -57,14 +57,16 @@ for tag in tags:
             print(traj.fullpath)
 
         # position
-        x = traj.data['geometry'].x.values
-        y = traj.data['geometry'].y.values
-        z = np.array([f.z for f in traj.data['geometry']])
-        sw = traj.data['Solar_Radiation'].values
-        rr = traj.data['Rainfall'].values
+        # hmjb 7-may-2026: without .copy() these were just views of the original array
+        x = traj.data['geometry'].x.values.copy()
+        y = traj.data['geometry'].y.values.copy()
+        z = traj.data['geometry'].z.values.copy()
+        #7-may-2026 z = np.array([f.z for f in traj.data['geometry']])
+        sw = traj.data['Solar_Radiation'].values.copy()
+        rr = traj.data['Rainfall'].values.copy()
         
         # time
-        t = traj.data['DateTime'].values
+        t = traj.data['DateTime'].values.copy()
         ts = (t - np.datetime64('1970-01-01'))/np.timedelta64(1,'s')
         td = [ dt.datetime.fromtimestamp(tmp, tz=dt.timezone.utc) for tmp in ts ]
         backhours = (ts-ts[0])/3600.

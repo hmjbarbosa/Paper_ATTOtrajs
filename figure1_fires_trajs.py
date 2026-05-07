@@ -77,11 +77,12 @@ for i in range(0,ntrajs):
     print(traj.fullpath)
 
     # position
-    x = traj.data['geometry'].x.values
-    y = traj.data['geometry'].y.values
+    # hmjb 7-may-2026: without .copy() these were just views of the original array
+    x = traj.data['geometry'].x.values.copy()
+    y = traj.data['geometry'].y.values.copy()
 
     # time
-    t = traj.data['DateTime'].values
+    t = traj.data['DateTime'].values.copy()
     ts = (t - np.datetime64('1970-01-01'))/np.timedelta64(1,'s')
     td = [ dt.datetime.fromtimestamp(tmp, tz=dt.timezone.utc) for tmp in ts ]
 

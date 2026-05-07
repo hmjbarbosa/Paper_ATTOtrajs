@@ -110,12 +110,14 @@ print('trajs bbox: ',minlon,maxlon,minlat,maxlat)
 # for each trajectory
 for i in range(0, 0): 
 #for i in range(0,ntrajs):
+    # hmjb 7-may-2026: traj is just a reference to the traj in the group, so we can modify it and it will be saved in the group
     traj = trajgroup[i]
     print(traj.fullpath)
 
     # position
-    x = traj.data['geometry'].x.values
-    y = traj.data['geometry'].y.values
+    # hmjb 7-may-2026: without .copy() these were just views of the original array
+    x = traj.data['geometry'].x.values.copy()
+    y = traj.data['geometry'].y.values.copy()
     #z = [ gg.z for gg in traj.data['geometry'] ]
         
     # time stamp (seconds from 1970-1-1)
@@ -182,11 +184,13 @@ for i in range(0, 0):
             listtrmm.append(np.mean(mprec))
 
     # add new columns to traj object
+    # hmjb 7-may-2026: as traj is just a reference, we are modifying the object in the group
     traj.data['num_fires'] = listnum
     traj.data['frp_fires'] = listfrp
     traj.data['trmm_prec'] = listtrmm
 
 # Save the trajgroup to a binary file using DILL
+# hmjb 7-may-2026: we now save the modified trajgroup object, with the additional columns 
 
 print('Writting binary file...')
 with open(outfile,'wb') as f:

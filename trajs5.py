@@ -20,18 +20,19 @@ listall = np.load('listall_002_12z_96h.npy')
 trajlen = 96/0.5 + 1
 
 # grab just the columns we need here 
-t0   = listall[:,0]   # start hour of traj (0, 6, 12, 18Z)
-alt  = listall[:,1]   # start altitude (250, 500, 750 m)
-tid  = listall[:,2]   # trajectory number
-dt   = listall[:,3]   # backward time (0h, -0.5h, -1h, ...)
-tf   = listall[:,4]   # time of day
-x    = listall[:,5]   
-y    = listall[:,6]   # position
-z    = listall[:,7]
-year = listall[:,13]
-mon  = listall[:,14]  # date
-day  = listall[:,15]
-flag = listall[:,16]  # pollution flag
+# hmjb 7-may-2026: without .copy() these were just views of the original array
+t0   = listall[:,0].copy()   # start hour of traj (0, 6, 12, 18Z)
+alt  = listall[:,1].copy()   # start altitude (250, 500, 750 m)
+tid  = listall[:,2].copy()   # trajectory number
+dt   = listall[:,3].copy()   # backward time (0h, -0.5h, -1h, ...)
+tf   = listall[:,4].copy()   # time of day
+x    = listall[:,5].copy()   
+y    = listall[:,6].copy()   # position
+z    = listall[:,7].copy()
+year = listall[:,13].copy()
+mon  = listall[:,14].copy()  # date
+day  = listall[:,15].copy()
+flag = listall[:,16].copy()  # pollution flag
 
 # define grid/histogram
 loni=-70; lonf=-20; lati=-15; latf=25; dl=1

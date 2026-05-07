@@ -24,14 +24,15 @@ plt.interactive(True)
 listall = np.load('listall.npy')
 
 # dados do arquivo com as trajetorias
-t0   = listall[:,0]
-alt  = listall[:,1]
-pos  = listall[:,2]
-dt   = listall[:,3]
-tf   = listall[:,4]
-x    = listall[:,5]
-y    = listall[:,6]
-z    = listall[:,7]
+# hmjb 7-may-2026: without .copy() these were just views of the original array
+t0   = listall[:,0].copy()
+alt  = listall[:,1].copy()
+pos  = listall[:,2].copy()
+dt   = listall[:,3].copy()
+tf   = listall[:,4].copy()
+x    = listall[:,5].copy()
+y    = listall[:,6].copy()
+z    = listall[:,7].copy()
 
 # define a grade/histograma
 loni=-62.7; lonf=-59; lati=-4.8; latf=-2.2; dl=0.2
