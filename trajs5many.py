@@ -211,7 +211,7 @@ nxy, xedges, yedges, ntrajs, nmax, nsum = ltmbcfiles.density_map_points(
 #        if tid[i] < tid[i-1]:
 #            tid[i:] += tid[i-1] - tid[i] + 1
 #
-#nxy, xedges, yedges, ntrajs, nmax, nsum = ltmbcfiles.density_map_trajs(
+#nxySingle, xedges, yedges, ntrajs, nmax, nsum = ltmbcfiles.density_map_trajs(
 #    [loni, lonf, lati, latf], [dl, dl], [x, y], flag, tid)
 
 #nxySingle = np.zeros([len(ycenters), len(xcenters), 3])
@@ -225,7 +225,7 @@ nxy, xedges, yedges, ntrajs, nmax, nsum = ltmbcfiles.density_map_points(
 #    # first, get the list of trajectory IDs for the current pollution flag
 #    idlist = np.unique(tid[mask])
 #
-# hmjb: 2025/jun/4 TID is not unique! it restarts from 0 for a new strating position
+# hmjb: 2025/jun/4 TID is not unique! it restarts from 0 for a new starting position
 #                  Hence, when loading multiple trajectory files at one, this will not work. 
 #
 #    # now loop over each trajectory
@@ -271,8 +271,8 @@ for nn in [2]:
             pc = ax1.pcolormesh(xedges, yedges, 100*nxy[:,:,ff]/nsum[ff], cmap=cmap, norm=Cnorm)
         if nn==2:
             pc = ax1.pcolormesh(xedges, yedges, 100*nxy[:,:,ff]/nmax[ff], cmap=cmap, norm=Cnorm)
-        if nn==3: 
-            pc = ax1.pcolormesh(xedges, yedges, 100*nxySingle[:,:,ff]/ntrajs[ff], cmap=cmap, norm=Cnorm)
+        #if nn==3: 
+        #    pc = ax1.pcolormesh(xedges, yedges, 100*nxySingle[:,:,ff]/ntrajs[ff], cmap=cmap, norm=Cnorm)
 
         fig.colorbar(pc, orientation='horizontal',pad=0.1, aspect=30,
                      label='Density of trajectories [%]', fraction=0.06, shrink=0.9)

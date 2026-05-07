@@ -1,4 +1,3 @@
-trajs5.py
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 #import glob
@@ -89,7 +88,7 @@ for ff in [0, 1, 2]:
     # now loop over each trajectory
     for ii in idlist:
         # build histogram with x,y data from a single trajectory
-#NOTE: tid==ii will not work if reading multiple NPY together
+        #NOTE: tid==ii will not work if reading multiple NPY together
         temp =  np.histogram2d(y[mask & (tid==ii)], x[mask & (tid==ii)], bins=[yedges, xedges])[0]
 
         # get a matrix of 0 (didn't pass) and 1 (trajectory passed there)
